@@ -34,8 +34,9 @@ const Layout: React.FC<LayoutProps> = ({ children, showBackButton = false, title
       <main className="flex-grow p-4">
         {children}
       </main>
-      <footer className="p-4 text-center text-white/70 text-sm">
-        Element Fusion Lab © {new Date().getFullYear()}
+      <footer className="p-4 text-center">
+        <p className="text-white/70 text-sm">Element Fusion Lab © {new Date().getFullYear()}</p>
+        <p className="text-white/70 text-sm mt-1 italic">Made with love by Twashin Ilahi for the every curious children in the world</p>
       </footer>
     </div>
   );
