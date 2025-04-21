@@ -1,4 +1,3 @@
-
 export interface Element {
   number: number;
   symbol: string;
@@ -7,6 +6,8 @@ export interface Element {
   category: ElementCategory;
   group: number | null;
   period: number;
+  funFacts?: string;
+  uses?: string;
 }
 
 export type ElementCategory = 
@@ -35,11 +36,28 @@ export const categoryColors: Record<ElementCategory, string> = {
 };
 
 export const elements: Element[] = [
-  // First row
-  { number: 1, symbol: 'H', name: 'Hydrogen', atomicMass: 1.008, category: 'nonmetal', group: 1, period: 1 },
-  { number: 2, symbol: 'He', name: 'Helium', atomicMass: 4.0026, category: 'noble-gas', group: 18, period: 1 },
-  
-  // Second row
+  { 
+    number: 1, 
+    symbol: 'H', 
+    name: 'Hydrogen', 
+    atomicMass: 1.008, 
+    category: 'nonmetal', 
+    group: 1, 
+    period: 1,
+    funFacts: "The lightest and most abundant element in the universe. Stars are mostly made of hydrogen!",
+    uses: "Used in fuel cells, rocket fuel, and to make many important chemicals."
+  },
+  { 
+    number: 2, 
+    symbol: 'He', 
+    name: 'Helium', 
+    atomicMass: 4.0026, 
+    category: 'noble-gas', 
+    group: 18, 
+    period: 1,
+    funFacts: "The second most abundant element in the universe. It was first discovered on the Sun!",
+    uses: "Used in balloons, deep-sea diving tanks, and to cool MRI machines."
+  },
   { number: 3, symbol: 'Li', name: 'Lithium', atomicMass: 6.94, category: 'alkali-metal', group: 1, period: 2 },
   { number: 4, symbol: 'Be', name: 'Beryllium', atomicMass: 9.0122, category: 'alkaline-earth-metal', group: 2, period: 2 },
   { number: 5, symbol: 'B', name: 'Boron', atomicMass: 10.81, category: 'metalloid', group: 13, period: 2 },
@@ -48,8 +66,6 @@ export const elements: Element[] = [
   { number: 8, symbol: 'O', name: 'Oxygen', atomicMass: 15.999, category: 'nonmetal', group: 16, period: 2 },
   { number: 9, symbol: 'F', name: 'Fluorine', atomicMass: 18.998, category: 'halogen', group: 17, period: 2 },
   { number: 10, symbol: 'Ne', name: 'Neon', atomicMass: 20.180, category: 'noble-gas', group: 18, period: 2 },
-  
-  // First 20 elements for now
   { number: 11, symbol: 'Na', name: 'Sodium', atomicMass: 22.990, category: 'alkali-metal', group: 1, period: 3 },
   { number: 12, symbol: 'Mg', name: 'Magnesium', atomicMass: 24.305, category: 'alkaline-earth-metal', group: 2, period: 3 },
   { number: 13, symbol: 'Al', name: 'Aluminum', atomicMass: 26.982, category: 'post-transition-metal', group: 13, period: 3 },
@@ -60,6 +76,4 @@ export const elements: Element[] = [
   { number: 18, symbol: 'Ar', name: 'Argon', atomicMass: 39.95, category: 'noble-gas', group: 18, period: 3 },
   { number: 19, symbol: 'K', name: 'Potassium', atomicMass: 39.098, category: 'alkali-metal', group: 1, period: 4 },
   { number: 20, symbol: 'Ca', name: 'Calcium', atomicMass: 40.078, category: 'alkaline-earth-metal', group: 2, period: 4 },
-  
-  // The rest of the elements would go here - simplified for the first version
 ];

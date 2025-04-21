@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -10,6 +9,11 @@ import { Element } from '@/data/elements';
 import { Compound, findCompound } from '@/data/compounds';
 import { toast } from '@/components/ui/use-toast';
 
+interface CompoundDetails {
+  funFacts?: string[];
+  uses?: string[];
+}
+
 const WatchReaction = () => {
   const [selectedElements, setSelectedElements] = useState<Element[]>([]);
   const [isReacting, setIsReacting] = useState(false);
@@ -17,12 +21,10 @@ const WatchReaction = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Load selected elements from local storage
     const storedElements = localStorage.getItem('selectedElements');
     if (storedElements) {
       setSelectedElements(JSON.parse(storedElements));
     } else {
-      // If no elements are selected, redirect back to mix elements
       navigate('/mix-elements');
     }
   }, [navigate]);
@@ -30,14 +32,11 @@ const WatchReaction = () => {
   const startReaction = () => {
     setIsReacting(true);
     
-    // Find if these elements form a known compound
     const compound = findCompound(selectedElements);
     
-    // After a delay, show the result
     setTimeout(() => {
       setResultCompound(compound);
       
-      // If compound was found, add to discoveries in local storage
       if (compound) {
         const discoveries = JSON.parse(localStorage.getItem('discoveries') || '[]');
         if (!discoveries.some((d: Compound) => d.formula === compound.formula)) {
@@ -91,6 +90,28 @@ const WatchReaction = () => {
           <Card className="p-4 max-w-md w-full bg-white/20 text-white border-none mb-6">
             <h2 className="text-xl font-bold mb-2">{resultCompound.name} ({resultCompound.formula})</h2>
             <p className="text-sm mb-4">{resultCompound.description}</p>
+            
+            {resultCompound.funFacts && (
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold mb-2">Fun Facts</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  {resultCompound.funFacts.map((fact, index) => (
+                    <li key={index} className="text-sm">{fact}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            
+            {resultCompound.uses && (
+              <div className="mt-4">
+                <h3 className="text-lg font-semibold mb-2">Real-life Uses</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  {resultCompound.uses.map((use, index) => (
+                    <li key={index} className="text-sm">{use}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </Card>
         ) : isReacting ? (
           <Card className="p-4 max-w-md w-full bg-white/20 text-white border-none mb-6">
