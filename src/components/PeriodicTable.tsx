@@ -1,8 +1,13 @@
 
 import React, { useState } from 'react';
-import { Element } from '@/data/elements';
+import { Element, categoryColors } from '@/data/elements';
 import ElementCard from './ElementCard';
 import ElementDetailsDialog from './ElementDetailsDialog';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface PeriodicTableProps {
   elements: Element[];
@@ -21,12 +26,21 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
     return selectedElements.some(el => el.number === element.number);
   };
 
-  const renderElementInPosition = (atomicNumber: number) => {
-    const element = elements.find(e => e.number === atomicNumber);
-    if (!element) return <div className="w-14 h-14" />;
+  const renderElementInPosition = (positions: [number, number], size = 1) => {
+    const [row, col] = positions;
+    const element = elements.find(e => 
+      (e.period === row && e.group === col) || 
+      // Special case for Lanthanides (57-71) and Actinides (89-103)
+      (row === 8 && e.number >= 57 && e.number <= 71 && (e.number - 57 + 3) === col) ||
+      (row === 9 && e.number >= 89 && e.number <= 103 && (e.number - 89 + 3) === col)
+    );
+
+    if (!element) {
+      return <div className={`empty-cell ${size > 1 ? `col-span-${size}` : ''}`} />;
+    }
 
     return (
-      <div className="w-14 h-14">
+      <div className={`element-container ${size > 1 ? `col-span-${size}` : ''}`}>
         <ElementCard
           element={element}
           isSelected={isElementSelected(element)}
@@ -37,95 +51,217 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
     );
   };
 
+  // Helper to create a range of cells
+  const renderElementRange = (period: number, startGroup: number, endGroup: number) => {
+    return Array.from({ length: endGroup - startGroup + 1 }).map((_, index) => {
+      const group = startGroup + index;
+      return renderElementInPosition([period, group]);
+    });
+  };
+
+  // Helper for empty cells
+  const renderEmptyCells = (count: number) => {
+    return Array.from({ length: count }).map((_, index) => (
+      <div key={`empty-${index}`} className="empty-cell" />
+    ));
+  };
+
   return (
-    <div className="w-full overflow-auto p-2">
-      <div className="inline-block min-w-full">
+    <div className="periodic-table-container w-full overflow-auto p-2">
+      <div className="periodic-table inline-block">
+        {/* Group numbers row */}
+        <div className="grid grid-cols-18 gap-1 mb-2">
+          <div className="label-cell" />
+          {Array.from({ length: 18 }).map((_, i) => (
+            <div key={`group-${i+1}`} className="group-label">{i+1}</div>
+          ))}
+        </div>
+
         {/* Period 1 */}
         <div className="grid grid-cols-18 gap-1">
-          {renderElementInPosition(1)}
-          <div className="col-span-16" />
-          {renderElementInPosition(2)}
+          <div className="period-label">1</div>
+          {renderElementInPosition([1, 1])}
+          {renderEmptyCells(16)}
+          {renderElementInPosition([1, 18])}
         </div>
 
         {/* Period 2 */}
-        <div className="grid grid-cols-18 gap-1 mt-1">
-          {renderElementInPosition(3)}
-          {renderElementInPosition(4)}
-          <div className="col-span-10" />
-          {renderElementInPosition(5)}
-          {renderElementInPosition(6)}
-          {renderElementInPosition(7)}
-          {renderElementInPosition(8)}
-          {renderElementInPosition(9)}
-          {renderElementInPosition(10)}
+        <div className="grid grid-cols-18 gap-1">
+          <div className="period-label">2</div>
+          {renderElementInPosition([2, 1])}
+          {renderElementInPosition([2, 2])}
+          {renderEmptyCells(10)}
+          {renderElementRange(2, 13, 18)}
         </div>
 
         {/* Period 3 */}
-        <div className="grid grid-cols-18 gap-1 mt-1">
-          {renderElementInPosition(11)}
-          {renderElementInPosition(12)}
-          <div className="col-span-10" />
-          {renderElementInPosition(13)}
-          {renderElementInPosition(14)}
-          {renderElementInPosition(15)}
-          {renderElementInPosition(16)}
-          {renderElementInPosition(17)}
-          {renderElementInPosition(18)}
+        <div className="grid grid-cols-18 gap-1">
+          <div className="period-label">3</div>
+          {renderElementInPosition([3, 1])}
+          {renderElementInPosition([3, 2])}
+          {renderEmptyCells(10)}
+          {renderElementRange(3, 13, 18)}
         </div>
 
-        {/* Periods 4-7 (Main block) */}
-        {[4, 5, 6, 7].map(period => (
-          <div key={period} className="grid grid-cols-18 gap-1 mt-1">
-            {Array.from({ length: 18 }).map((_, index) => {
-              const atomicNumber = elements.find(
-                e => e.period === period && e.group === index + 1
-              )?.number;
-              return atomicNumber ? renderElementInPosition(atomicNumber) : <div key={index} className="w-14 h-14" />;
-            })}
+        {/* Period 4 */}
+        <div className="grid grid-cols-18 gap-1">
+          <div className="period-label">4</div>
+          {renderElementRange(4, 1, 18)}
+        </div>
+
+        {/* Period 5 */}
+        <div className="grid grid-cols-18 gap-1">
+          <div className="period-label">5</div>
+          {renderElementRange(5, 1, 18)}
+        </div>
+
+        {/* Period 6 */}
+        <div className="grid grid-cols-18 gap-1">
+          <div className="period-label">6</div>
+          {renderElementInPosition([6, 1])}
+          {renderElementInPosition([6, 2])}
+          {/* La marker */}
+          <div className="lanthanide-marker">*</div>
+          {renderElementRange(6, 4, 18)}
+        </div>
+
+        {/* Period 7 */}
+        <div className="grid grid-cols-18 gap-1">
+          <div className="period-label">7</div>
+          {renderElementInPosition([7, 1])}
+          {renderElementInPosition([7, 2])}
+          {/* Ac marker */}
+          <div className="actinide-marker">**</div>
+          {renderElementRange(7, 4, 18)}
+        </div>
+
+        {/* Spacer row */}
+        <div className="h-4"></div>
+
+        {/* Lanthanides Row (Period 8 for our model) */}
+        <div className="grid grid-cols-18 gap-1">
+          <div className="period-label lanthanide-label">*</div>
+          {renderEmptyCells(2)}
+          {/* Start at column 3 */}
+          {Array.from({ length: 15 }).map((_, i) => 
+            renderElementInPosition([8, i + 3])
+          )}
+        </div>
+
+        {/* Actinides Row (Period 9 for our model) */}
+        <div className="grid grid-cols-18 gap-1">
+          <div className="period-label actinide-label">**</div>
+          {renderEmptyCells(2)}
+          {/* Start at column 3 */}
+          {Array.from({ length: 15 }).map((_, i) => 
+            renderElementInPosition([9, i + 3])
+          )}
+        </div>
+
+        {/* Legend */}
+        <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 legend">
+          <div className="legend-item">
+            <div className="legend-color bg-red-100 border-red-300"></div>
+            <span>Alkali Metals</span>
           </div>
-        ))}
-
-        {/* Spacer */}
-        <div className="h-4" />
-
-        {/* Lanthanides */}
-        <div className="grid grid-cols-15 gap-1 mt-4 ml-16">
-          {elements
-            .filter(element => element.number >= 57 && element.number <= 71)
-            .map(element => (
-              <div key={element.number} className="w-14 h-14">
-                <ElementCard
-                  element={element}
-                  isSelected={isElementSelected(element)}
-                  onClick={() => onElementSelect(element)}
-                  onShowDetails={() => setSelectedElementForDetails(element)}
-                />
-              </div>
-            ))}
-        </div>
-
-        {/* Actinides */}
-        <div className="grid grid-cols-15 gap-1 mt-1 ml-16">
-          {elements
-            .filter(element => element.number >= 89 && element.number <= 103)
-            .map(element => (
-              <div key={element.number} className="w-14 h-14">
-                <ElementCard
-                  element={element}
-                  isSelected={isElementSelected(element)}
-                  onClick={() => onElementSelect(element)}
-                  onShowDetails={() => setSelectedElementForDetails(element)}
-                />
-              </div>
-            ))}
+          <div className="legend-item">
+            <div className="legend-color bg-orange-100 border-orange-300"></div>
+            <span>Alkaline Earth Metals</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color bg-yellow-100 border-yellow-300"></div>
+            <span>Transition Metals</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color bg-lime-100 border-lime-300"></div>
+            <span>Post-transition Metals</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color bg-green-100 border-green-300"></div>
+            <span>Metalloids</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color bg-teal-100 border-teal-300"></div>
+            <span>Nonmetals</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color bg-cyan-100 border-cyan-300"></div>
+            <span>Halogens</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color bg-purple-100 border-purple-300"></div>
+            <span>Noble Gases</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color bg-pink-100 border-pink-300"></div>
+            <span>Lanthanides</span>
+          </div>
+          <div className="legend-item">
+            <div className="legend-color bg-fuchsia-100 border-fuchsia-300"></div>
+            <span>Actinides</span>
+          </div>
         </div>
       </div>
 
+      {/* Element Details Dialog */}
       <ElementDetailsDialog
         element={selectedElementForDetails}
         open={!!selectedElementForDetails}
         onOpenChange={(open) => !open && setSelectedElementForDetails(null)}
       />
+
+      <style jsx>{`
+        .periodic-table-container {
+          font-size: 0.75rem;
+        }
+        .periodic-table {
+          --cell-size: 3.5rem;
+        }
+        .element-container {
+          width: var(--cell-size);
+          height: var(--cell-size);
+        }
+        .empty-cell {
+          width: var(--cell-size);
+          height: var(--cell-size);
+        }
+        .period-label, .group-label {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 1.5rem;
+          height: var(--cell-size);
+          font-weight: bold;
+          color: white;
+        }
+        .lanthanide-marker, .actinide-marker {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: var(--cell-size);
+          height: var(--cell-size);
+          font-weight: bold;
+          color: white;
+        }
+        .lanthanide-label, .actinide-label {
+          color: #FEC6A1;
+        }
+        .legend {
+          color: white;
+        }
+        .legend-item {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.75rem;
+        }
+        .legend-color {
+          width: 1.5rem;
+          height: 1.5rem;
+          border-radius: 0.25rem;
+          border-width: 1px;
+        }
+      `}</style>
     </div>
   );
 };
