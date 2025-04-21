@@ -29,17 +29,17 @@ const ElementCard: React.FC<ElementCardProps> = ({
   return (
     <div 
       className={cn(
-        "element-card cursor-pointer hover:scale-105 transition-transform",
+        "element-card cursor-pointer hover:scale-105 transition-transform text-center p-1",
         categoryColors[element.category],
-        isSelected && "ring-2 ring-primary scale-105",
+        isSelected && "ring-2 ring-primary scale-105 font-bold",
         className
       )}
       onClick={handleClick}
       title="Click to select, Shift+Click for details"
     >
-      <div className="text-xs text-gray-500">{element.number}</div>
-      <div className="text-lg font-bold">{element.symbol}</div>
-      <div className="text-xs truncate max-w-full">{element.name}</div>
+      <div className="text-[0.6rem] text-gray-600">{element.number}</div>
+      <div className="text-sm font-bold">{element.symbol}</div>
+      <div className="text-[0.6rem] truncate max-w-full">{element.name}</div>
     </div>
   );
 };

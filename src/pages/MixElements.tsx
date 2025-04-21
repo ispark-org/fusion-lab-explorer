@@ -7,6 +7,7 @@ import ElementCard from '@/components/ElementCard';
 import { Button } from '@/components/ui/button';
 import { elements, Element } from '@/data/elements';
 import { toast } from '@/components/ui/use-toast';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const MixElements = () => {
   const [selectedElements, setSelectedElements] = useState<Element[]>([]);
@@ -69,13 +70,11 @@ const MixElements = () => {
 
         <div className="flex-grow overflow-hidden bg-white/10 rounded-lg p-4">
           <h2 className="text-lg font-bold mb-4 text-white">Periodic Table</h2>
-          <div className="overflow-auto max-h-[calc(100vh-300px)]">
-            <PeriodicTable 
-              elements={elements} 
-              selectedElements={selectedElements}
-              onElementSelect={handleElementSelect}
-            />
-          </div>
+          <PeriodicTable 
+            elements={elements} 
+            selectedElements={selectedElements}
+            onElementSelect={handleElementSelect}
+          />
         </div>
 
         <div className="mt-4 flex justify-center">
