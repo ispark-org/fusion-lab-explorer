@@ -143,8 +143,8 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
           <div className="period-label lanthanide-label">*</div>
           {renderEmptyCells(2)}
           {/* Start at column 3 */}
-          {Array.from({ length: 15 }).map((_, i) => 
-            renderElementInPosition([8, i + 3])
+          {Array.from({ length: 15 }).map((_, index) => 
+            renderElementInPosition([8, index + 3])
           )}
         </div>
 
@@ -153,8 +153,8 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
           <div className="period-label actinide-label">**</div>
           {renderEmptyCells(2)}
           {/* Start at column 3 */}
-          {Array.from({ length: 15 }).map((_, i) => 
-            renderElementInPosition([9, i + 3])
+          {Array.from({ length: 15 }).map((_, index) => 
+            renderElementInPosition([9, index + 3])
           )}
         </div>
 
@@ -210,7 +210,8 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
         onOpenChange={(open) => !open && setSelectedElementForDetails(null)}
       />
 
-      <style jsx>{`
+      <style>
+        {`
         .periodic-table-container {
           font-size: 0.75rem;
         }
@@ -261,7 +262,8 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
           border-radius: 0.25rem;
           border-width: 1px;
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
