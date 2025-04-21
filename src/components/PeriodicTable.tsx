@@ -202,7 +202,8 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
         onOpenChange={(open) => !open && setSelectedElementForDetails(null)}
       />
 
-      <style jsx>{`
+      <style>
+        {`
         .periodic-table-container {
           font-size: 0.75rem;
         }
@@ -253,7 +254,8 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
           border-radius: 0.25rem;
           border-width: 1px;
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
