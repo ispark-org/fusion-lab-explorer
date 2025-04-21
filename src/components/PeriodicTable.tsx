@@ -1,13 +1,7 @@
-
 import React, { useState } from 'react';
 import { Element, categoryColors } from '@/data/elements';
 import ElementCard from './ElementCard';
 import ElementDetailsDialog from './ElementDetailsDialog';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
 interface PeriodicTableProps {
   elements: Element[];
@@ -30,7 +24,6 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
     const [row, col] = positions;
     const element = elements.find(e => 
       (e.period === row && e.group === col) || 
-      // Special case for Lanthanides (57-71) and Actinides (89-103)
       (row === 8 && e.number >= 57 && e.number <= 71 && (e.number - 57 + 3) === col) ||
       (row === 9 && e.number >= 89 && e.number <= 103 && (e.number - 89 + 3) === col)
     );
@@ -39,6 +32,22 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
       return <div className={`empty-cell ${size > 1 ? `col-span-${size}` : ''}`} />;
     }
 
+    const getCategoryColor = (category: string) => {
+      switch (category) {
+        case 'alkali-metal': return 'bg-red-200 hover:bg-red-300 border-red-400';
+        case 'alkaline-earth-metal': return 'bg-orange-200 hover:bg-orange-300 border-orange-400';
+        case 'transition-metal': return 'bg-yellow-200 hover:bg-yellow-300 border-yellow-400';
+        case 'post-transition-metal': return 'bg-lime-200 hover:bg-lime-300 border-lime-400';
+        case 'metalloid': return 'bg-green-200 hover:bg-green-300 border-green-400';
+        case 'nonmetal': return 'bg-teal-200 hover:bg-teal-300 border-teal-400';
+        case 'halogen': return 'bg-cyan-200 hover:bg-cyan-300 border-cyan-400';
+        case 'noble-gas': return 'bg-purple-200 hover:bg-purple-300 border-purple-400';
+        case 'lanthanoid': return 'bg-pink-200 hover:bg-pink-300 border-pink-400';
+        case 'actinoid': return 'bg-fuchsia-200 hover:bg-fuchsia-300 border-fuchsia-400';
+        default: return 'bg-gray-200 hover:bg-gray-300 border-gray-400';
+      }
+    };
+
     return (
       <div className={`element-container ${size > 1 ? `col-span-${size}` : ''}`}>
         <ElementCard
@@ -46,12 +55,12 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
           isSelected={isElementSelected(element)}
           onClick={() => onElementSelect(element)}
           onShowDetails={() => setSelectedElementForDetails(element)}
+          className={getCategoryColor(element.category)}
         />
       </div>
     );
   };
 
-  // Helper to create a range of cells
   const renderElementRange = (period: number, startGroup: number, endGroup: number) => {
     return Array.from({ length: endGroup - startGroup + 1 }).map((_, index) => {
       const group = startGroup + index;
@@ -59,7 +68,6 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
     });
   };
 
-  // Helper for empty cells
   const renderEmptyCells = (count: number) => {
     return Array.from({ length: count }).map((_, index) => (
       <div key={`empty-${index}`} className="empty-cell" />
@@ -69,7 +77,6 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
   return (
     <div className="periodic-table-container w-full overflow-auto p-2">
       <div className="periodic-table inline-block">
-        {/* Group numbers row */}
         <div className="grid grid-cols-18 gap-1 mb-2">
           <div className="label-cell" />
           {Array.from({ length: 18 }).map((_, i) => (
@@ -77,7 +84,6 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
           ))}
         </div>
 
-        {/* Period 1 */}
         <div className="grid grid-cols-18 gap-1">
           <div className="period-label">1</div>
           {renderElementInPosition([1, 1])}
@@ -85,7 +91,6 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
           {renderElementInPosition([1, 18])}
         </div>
 
-        {/* Period 2 */}
         <div className="grid grid-cols-18 gap-1">
           <div className="period-label">2</div>
           {renderElementInPosition([2, 1])}
@@ -94,7 +99,6 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
           {renderElementRange(2, 13, 18)}
         </div>
 
-        {/* Period 3 */}
         <div className="grid grid-cols-18 gap-1">
           <div className="period-label">3</div>
           {renderElementInPosition([3, 1])}
@@ -103,107 +107,94 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
           {renderElementRange(3, 13, 18)}
         </div>
 
-        {/* Period 4 */}
         <div className="grid grid-cols-18 gap-1">
           <div className="period-label">4</div>
           {renderElementRange(4, 1, 18)}
         </div>
 
-        {/* Period 5 */}
         <div className="grid grid-cols-18 gap-1">
           <div className="period-label">5</div>
           {renderElementRange(5, 1, 18)}
         </div>
 
-        {/* Period 6 */}
         <div className="grid grid-cols-18 gap-1">
           <div className="period-label">6</div>
           {renderElementInPosition([6, 1])}
           {renderElementInPosition([6, 2])}
-          {/* La marker */}
           <div className="lanthanide-marker">*</div>
           {renderElementRange(6, 4, 18)}
         </div>
 
-        {/* Period 7 */}
         <div className="grid grid-cols-18 gap-1">
           <div className="period-label">7</div>
           {renderElementInPosition([7, 1])}
           {renderElementInPosition([7, 2])}
-          {/* Ac marker */}
           <div className="actinide-marker">**</div>
           {renderElementRange(7, 4, 18)}
         </div>
 
-        {/* Spacer row */}
         <div className="h-4"></div>
 
-        {/* Lanthanides Row (Period 8 for our model) */}
         <div className="grid grid-cols-18 gap-1">
           <div className="period-label lanthanide-label">*</div>
           {renderEmptyCells(2)}
-          {/* Start at column 3 */}
           {Array.from({ length: 15 }).map((_, index) => 
             renderElementInPosition([8, index + 3])
           )}
         </div>
 
-        {/* Actinides Row (Period 9 for our model) */}
         <div className="grid grid-cols-18 gap-1">
           <div className="period-label actinide-label">**</div>
           {renderEmptyCells(2)}
-          {/* Start at column 3 */}
           {Array.from({ length: 15 }).map((_, index) => 
             renderElementInPosition([9, index + 3])
           )}
         </div>
 
-        {/* Legend */}
         <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 legend">
           <div className="legend-item">
-            <div className="legend-color bg-red-100 border-red-300"></div>
+            <div className="legend-color bg-red-200 border-red-400"></div>
             <span>Alkali Metals</span>
           </div>
           <div className="legend-item">
-            <div className="legend-color bg-orange-100 border-orange-300"></div>
+            <div className="legend-color bg-orange-200 border-orange-400"></div>
             <span>Alkaline Earth Metals</span>
           </div>
           <div className="legend-item">
-            <div className="legend-color bg-yellow-100 border-yellow-300"></div>
+            <div className="legend-color bg-yellow-200 border-yellow-400"></div>
             <span>Transition Metals</span>
           </div>
           <div className="legend-item">
-            <div className="legend-color bg-lime-100 border-lime-300"></div>
+            <div className="legend-color bg-lime-200 border-lime-400"></div>
             <span>Post-transition Metals</span>
           </div>
           <div className="legend-item">
-            <div className="legend-color bg-green-100 border-green-300"></div>
+            <div className="legend-color bg-green-200 border-green-400"></div>
             <span>Metalloids</span>
           </div>
           <div className="legend-item">
-            <div className="legend-color bg-teal-100 border-teal-300"></div>
+            <div className="legend-color bg-teal-200 border-teal-400"></div>
             <span>Nonmetals</span>
           </div>
           <div className="legend-item">
-            <div className="legend-color bg-cyan-100 border-cyan-300"></div>
+            <div className="legend-color bg-cyan-200 border-cyan-400"></div>
             <span>Halogens</span>
           </div>
           <div className="legend-item">
-            <div className="legend-color bg-purple-100 border-purple-300"></div>
+            <div className="legend-color bg-purple-200 border-purple-400"></div>
             <span>Noble Gases</span>
           </div>
           <div className="legend-item">
-            <div className="legend-color bg-pink-100 border-pink-300"></div>
+            <div className="legend-color bg-pink-200 border-pink-400"></div>
             <span>Lanthanides</span>
           </div>
           <div className="legend-item">
-            <div className="legend-color bg-fuchsia-100 border-fuchsia-300"></div>
+            <div className="legend-color bg-fuchsia-200 border-fuchsia-400"></div>
             <span>Actinides</span>
           </div>
         </div>
       </div>
 
-      {/* Element Details Dialog */}
       <ElementDetailsDialog
         element={selectedElementForDetails}
         open={!!selectedElementForDetails}
