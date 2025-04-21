@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Element, categoryColors } from '@/data/elements';
 import ElementCard from './ElementCard';
@@ -29,7 +30,7 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
     );
 
     if (!element) {
-      return <div className={`empty-cell ${size > 1 ? `col-span-${size}` : ''}`} />;
+      return <div key={`empty-${row}-${col}`} className={`empty-cell ${size > 1 ? `col-span-${size}` : ''}`} />;
     }
 
     const getCategoryColor = (category: string) => {
@@ -49,7 +50,7 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
     };
 
     return (
-      <div className={`element-container ${size > 1 ? `col-span-${size}` : ''}`}>
+      <div key={`element-${element.number}`} className={`element-container ${size > 1 ? `col-span-${size}` : ''}`}>
         <ElementCard
           element={element}
           isSelected={isElementSelected(element)}
@@ -70,7 +71,7 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
 
   const renderEmptyCells = (count: number) => {
     return Array.from({ length: count }).map((_, index) => (
-      <div key={`empty-${index}`} className="empty-cell" />
+      <div key={`empty-placeholder-${index}`} className="empty-cell" />
     ));
   };
 
@@ -201,8 +202,7 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
         onOpenChange={(open) => !open && setSelectedElementForDetails(null)}
       />
 
-      <style>
-        {`
+      <style jsx>{`
         .periodic-table-container {
           font-size: 0.75rem;
         }
@@ -253,8 +253,7 @@ const PeriodicTable: React.FC<PeriodicTableProps> = ({
           border-radius: 0.25rem;
           border-width: 1px;
         }
-        `}
-      </style>
+      `}</style>
     </div>
   );
 };
